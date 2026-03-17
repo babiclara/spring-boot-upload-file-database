@@ -8,11 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -68,5 +64,28 @@ public class FileController {
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
         .body(fileDB.getData());
+  }
+
+  @PutMapping("/update/files/{id}")
+  public ResponseEntity<ResponseMessage> updateFile(@PathVariable String id,
+                                                    @RequestParam("file") MultipartFile file) {
+    try {
+      storageService.update(id, file);
+      return ResponseEntity.ok(new ResponseMessage("Updated successfully: " + file.getOriginalFilename()));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+              .body(new ResponseMessage("Could not update file: " + e.getMessage()));
+    }
+  }
+
+  @DeleteMapping("/delete/files/{id}")
+  public ResponseEntity<ResponseMessage> deleteFile(@PathVariable String id) {
+    try {
+      storageService.delete(id);
+      return ResponseEntity.ok(new ResponseMessage("Deleted successfully, id: " + id));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+              .body(new ResponseMessage("Could not delete file: " + e.getMessage()));
+    }
   }
 }

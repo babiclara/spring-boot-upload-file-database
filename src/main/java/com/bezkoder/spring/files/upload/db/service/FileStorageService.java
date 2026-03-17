@@ -31,4 +31,16 @@ public class FileStorageService {
   public Stream<FileDB> getAllFiles() {
     return fileDBRepository.findAll().stream();
   }
+
+  public FileDB update(String id, MultipartFile file) throws IOException {
+    FileDB existing = getFile(id);
+    existing.setName(StringUtils.cleanPath(file.getOriginalFilename()));
+    existing.setType(file.getContentType());
+    existing.setData(file.getBytes());
+    return fileDBRepository.save(existing);
+  }
+
+  public void delete(String id) {
+    fileDBRepository.delete(getFile(id));
+  }
 }
