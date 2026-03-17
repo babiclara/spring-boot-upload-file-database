@@ -32,14 +32,19 @@ public class FileStorageService {
     return fileDBRepository.findAll().stream();
   }
 
-  public FileDB update(String id, MultipartFile file) throws IOException {
+  public FileDB update(String id, MultipartFile file, String name) throws IOException {
     FileDB existing = getFile(id);
-    existing.setName(StringUtils.cleanPath(file.getOriginalFilename()));
-    existing.setType(file.getContentType());
-    existing.setData(file.getBytes());
+
+    if (name != null && !name.trim().isEmpty()) {
+      existing.setName(name);
+    }
+    if (file != null) {
+      existing.setType(file.getContentType());
+      existing.setData(file.getBytes());
+    }
+
     return fileDBRepository.save(existing);
   }
-
   public void delete(String id) {
     fileDBRepository.delete(getFile(id));
   }

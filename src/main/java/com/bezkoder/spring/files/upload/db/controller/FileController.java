@@ -68,10 +68,11 @@ public class FileController {
 
   @PutMapping("/update/files/{id}")
   public ResponseEntity<ResponseMessage> updateFile(@PathVariable String id,
-                                                    @RequestParam("file") MultipartFile file) {
+                                                    @RequestParam(value = "file", required = false) MultipartFile file,
+                                                    @RequestParam(value = "name", required = false) String name) {
     try {
-      storageService.update(id, file);
-      return ResponseEntity.ok(new ResponseMessage("Updated successfully: " + file.getOriginalFilename()));
+      storageService.update(id, file, name);
+      return ResponseEntity.ok(new ResponseMessage("Updated successfully"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
               .body(new ResponseMessage("Could not update file: " + e.getMessage()));
